@@ -2,32 +2,16 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-# import glob
-#import zipfile
 from tensorflow import keras
-# from tensorflow.keras import backend as K
-# from tensorflow.keras import datasets, layers, models
 from tensorflow.keras.layers import Input
 from tensorflow.keras import Model
 from tensorflow.keras.models import load_model
 import argparse
-# from openpyxl import Workbook
 from openpyxl import load_workbook
 import datetime
 import random
 import tensorflow as tf
 import os
-# gpus = tf.config.experimental.list_physical_devices('GPU')
-# if gpus:
-#     try:
-#         # Currently, memory growth needs to be the same across GPUs
-#         for gpu in gpus:
-#             tf.config.experimental.set_memory_growth(gpu, True)
-#         logical_gpus = tf.config.experimental.list_logical_devices('GPU')
-#         print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
-#     except RuntimeError as e:
-#         # Memory growth must be set before GPUs have been initialized
-#         print(e)
 
 def main(args):
     config = pd.read_csv(args.set)
@@ -64,10 +48,6 @@ def main(args):
             lams_path = 'lams/' + config['lams'][m]
             lams_shape = config['lams'][m].split('_')
             lams_shape = [int(lams_shape[1]),int(lams_shape[2]),int(lams_shape[3])]
-            # lams_2ddata = []
-            # lams_2dpath = 'lams2d/' + config['lams2d'][m]
-            # lams_2dshape = config['lams2d'][m].split('_')
-            # lams_2dshape = [int(lams_2dshape[1]), int(lams_2dshape[2])]
             x = 0
             y = 0
             for i in range(len(numeric_data_rss)):
@@ -186,11 +166,8 @@ def main(args):
                 continue
 
             predictions = model.predict([img_test,  numeric_test[:,0], numeric_test[:,1]])
-            # predictions_train = model.predict([img_train, numeric_train])
             evaluate = model.evaluate([img_test,  numeric_test[:,0], numeric_test[:,1]], label_test, verbose=2)
-            # evaluate2_ = model.evaluate([img_train, numeric_train], label_train, verbose=2)
             rmse = str(round(evaluate[1], 4))
-            # rmse2_ = str(round(evaluate2_[1], 4))
             comment = '3D_' + '(' + train_test + ')_' + str(line)
 
             if float(rmse) < 9.0:
@@ -201,43 +178,9 @@ def main(args):
                 plt.ylabel("RSRP (+120dBm)")
                 plt.title('RMSE: ' + rmse)
                 plt.legend(['Predict', 'Measured'])
-                # plt.show()
 
                 plt.savefig('result/' + comment + '.png')
                 plt.cla()
-
-                # for i in range(0, len(label_train) - 1):
-                #     plt.plot(i, predictions_train[i][0], c='red', marker='^', markersize=4)
-                #     plt.plot(i, label_train[i], c='blue', marker='^', markersize=4)
-                # plt.xlabel("index")
-                # plt.ylabel("RSRP (+120dBm)")
-                # plt.title('RMSE: ' + rmse2_)
-                # plt.legend(['Predict', 'Measured'])
-                # plt.show()
-                #
-                # plt.savefig('result/' + comment + '(train).png')
-                # plt.cla()
-                #
-                # A = [[]]
-                # for i in range(len(label_test)):
-                #     A.append([(262 - (numeric_test[i][2]*262)), label_test[i], predictions[i][0]])
-                #
-                # # print(A)
-                # A = A[1:]
-                # A.sort(key=lambda x: x[0])
-                #
-                # # print(A)
-                # for i in range(len(label_test)):
-                #     plt.plot(A[i][0], A[i][2], c='red', marker='^', markersize=4)
-                #     plt.plot(A[i][0], A[i][1], c='blue', marker='^', markersize=4)  # label
-                # plt.xlabel("Distance")
-                # plt.ylabel("RSRP (+120dBm)")
-                # plt.title('RMSE: ' + rmse)
-                # plt.legend(['Predict', 'Measured'])
-                # plt.xlim([0, 280])
-                # plt.ylim([0, 50])
-                # plt.savefig('result/' + comment + '(distance).png')
-                # plt.cla()
 
                 model.save("saved/" + str(line) + "_" + rmse + ".h5")
 
@@ -257,8 +200,6 @@ def main(args):
 
 
 if __name__ == '__main__':
-    # physical_devices = tf.config.experimental.list_physical_devices('GPU')
-    # tf.config.experimental.set_memory_growth(physical_devices[0], True)
     parser = argparse.ArgumentParser()
     parser.add_argument('-n', required=False, type=int, default=10, help='실행 횟수')
     parser.add_argument('-inner', required=False, type=int, default=40, help='inner 횟수')
